@@ -1,0 +1,183 @@
+@use './tokens' as *;
+
+// ==============================================================
+// Element Plus 核心 CSS 变量覆盖
+// ==============================================================
+
+:root {
+  --el-color-primary: #{$c-pink};
+  --el-color-primary-light-3: #{mix($c-pink, white, 70%)};
+  --el-color-primary-light-5: #{mix($c-pink, white, 50%)};
+  --el-color-primary-light-7: #{mix($c-pink, white, 30%)};
+  --el-color-primary-light-8: #{mix($c-pink, white, 20%)};
+  --el-color-primary-light-9: #{mix($c-pink, white, 10%)};
+  --el-color-primary-dark-2: #{mix($c-pink, black, 80%)};
+
+  --el-color-success: #{$c-green};
+  --el-color-warning: #{$c-yellow};
+  --el-color-danger:  #{$c-orange};
+  --el-color-info:    #{$c-cyan};
+
+  --el-border-radius-base:  #{$r-md};
+  --el-border-radius-small: #{$r-sm};
+
+  --el-font-family: #{$f-sans};
+  --el-font-size-base: 14px;
+
+  --el-text-color-primary:   #{$n-ink};
+  --el-text-color-regular:   #{$gray-700};
+  --el-text-color-secondary: #{$gray-500};
+  --el-text-color-placeholder: #{$gray-400};
+
+  --el-bg-color:       #{$n-paper};
+  --el-bg-color-page:  #{$n-cloud};
+  --el-border-color:         #{$gray-200};
+  --el-border-color-light:   #{$gray-100};
+  --el-border-color-lighter: #{$gray-100};
+}
+
+// ==============================================================
+// 组件级精细调整
+// ==============================================================
+
+// --- Button ---
+.el-button {
+  border-radius: $r-md;
+  font-weight: 700;
+  font-family: $f-sans;
+  letter-spacing: 0.01em;
+
+  &--primary:not(.is-disabled) {
+    background: $c-pink;
+    border-color: $c-pink;
+    &:hover,
+    &:focus { background: $c-pink-hover; border-color: $c-pink-hover; }
+  }
+  &--success:not(.is-disabled) {
+    background: $c-green; border-color: $c-green; color: $n-space;
+    &:hover,
+    &:focus { background: $c-green-hover; border-color: $c-green-hover; }
+  }
+  &--warning:not(.is-disabled) {
+    background: $c-yellow; border-color: $c-yellow; color: $n-ink;
+    &:hover,
+    &:focus { background: $c-yellow-hover; border-color: $c-yellow-hover; }
+  }
+  &--danger:not(.is-disabled) {
+    background: $c-orange; border-color: $c-orange;
+    &:hover,
+    &:focus { background: $c-orange-hover; border-color: $c-orange-hover; }
+  }
+}
+
+// --- Input / Select / Textarea ---
+.el-input__wrapper {
+  border-radius: $r-md;
+  box-shadow: 0 0 0 $bw $gray-200 inset;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: 0 0 0 $bw $gray-300 inset; }
+  &.is-focus {
+    box-shadow: 0 0 0 $bw $c-purple inset,
+                0 0 0 3px rgba(168, 85, 247, 0.15);
+  }
+}
+.el-textarea__inner {
+  border-radius: $r-md;
+  box-shadow: 0 0 0 $bw $gray-200 inset;
+  &:hover { box-shadow: 0 0 0 $bw $gray-300 inset; }
+  &:focus {
+    box-shadow: 0 0 0 $bw $c-purple inset,
+                0 0 0 3px rgba(168, 85, 247, 0.15);
+  }
+}
+
+// --- Table ---
+.el-table {
+  --el-table-header-bg-color: #{$n-cloud};
+  --el-table-header-text-color: #{$gray-500};
+  --el-table-row-hover-bg-color: #{$n-cloud};
+  --el-table-border-color: #{$gray-100};
+
+  border-radius: $r-lg;
+  border: $bw solid $gray-200;
+  overflow: hidden;
+
+  th.el-table__cell > .cell {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: $gray-500;
+  }
+
+  td.el-table__cell { padding: 14px 12px; }
+}
+
+// --- Card / Dialog / Drawer ---
+.el-card, .el-dialog, .el-drawer__body {
+  border-radius: $r-lg;
+}
+.el-dialog__header { padding-bottom: 12px; }
+.el-dialog__title { font-weight: 800; letter-spacing: -0.01em; }
+
+// --- Tag (保留作为 fallback；业务代码优先用 StatusTag) ---
+.el-tag {
+  border-radius: $r-pill;
+  font-weight: 700;
+  border-width: $bw;
+}
+
+// 亮底页面上 plain/light(默认) 变体文字色需要压深到 WCAG AA。EP 2.x 给 effect
+// 三态分别打的类是 .el-tag--dark / .el-tag--plain / 无修饰符(=light)，所以排除
+// .el-tag--dark 即可同时覆盖 plain 与默认 light 两种亮底场景；dark effect 走
+// filled 底+白文字，不需要改。
+.el-tag--success:not(.el-tag--dark) {
+  color: $c-green-text;
+  border-color: $c-green-text;
+}
+.el-tag--info:not(.el-tag--dark) {
+  color: $c-cyan-text;
+  border-color: $c-cyan-text;
+}
+.el-tag--warning:not(.el-tag--dark) {
+  color: $c-yellow-text;
+  border-color: $c-yellow-text;
+}
+// dark-area 内恢复原亮色（暗底上亮色文字对比度足够）
+.dark-area {
+  .el-tag--success:not(.el-tag--dark) { color: $c-green;  border-color: $c-green; }
+  .el-tag--info:not(.el-tag--dark)    { color: $c-cyan;   border-color: $c-cyan; }
+  .el-tag--warning:not(.el-tag--dark) { color: $c-yellow; border-color: $c-yellow; }
+}
+
+// --- Message / Notification ---
+.el-message, .el-notification {
+  border-radius: $r-md;
+  box-shadow: $sh-2;
+}
+
+// --- Pagination ---
+.el-pagination {
+  --el-pagination-button-color: #{$gray-600};
+  --el-pagination-hover-color: #{$c-pink};
+  .btn-prev, .btn-next, .el-pager li {
+    border-radius: $r-sm;
+    font-weight: 700;
+  }
+  .el-pager li.is-active { background: $c-pink; color: white; }
+}
+
+// --- Menu (侧边栏用) ---
+.el-menu {
+  border-right: none;
+  background-color: transparent;
+  .el-menu-item, .el-sub-menu__title {
+    border-radius: $r-md;
+    margin: 2px 0;
+  }
+}
+
+// --- Dropdown ---
+.el-dropdown-menu { border-radius: $r-md; padding: 6px; }
+.el-dropdown-menu__item { border-radius: $r-sm; }

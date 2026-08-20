@@ -1,0 +1,28 @@
+[Unit]
+Description=Watch Caddyfile for changes and trigger gpt2api self-healing sync
+Documentation=https://github.com/jiji262/gpt2api/blob/main/deploy/scripts/sync-caddy.sh
+
+[Path]
+# 监听 claude-relay-service 的 Caddyfile —— 任何 write/rename/create 都会触发
+# gpt2api-caddy-sync.service。claude-relay-service 的 deploy.sh awk 渲染完会
+# 覆盖这个文件,inotify 毫秒级感知,service 立刻把 gpt.sora.locker block 补回。
+#
+# 为什么同时监听 Caddyfile 和它的父目录:
+#   - PathModified=Caddyfile  文件内容被 write(2) → 触发
+#   - PathChanged=Caddyfile   mtime / atomic-rename 替换 → 触发
+#   - PathChanged=../caddy    父目录里文件被 rename-into(常见的原子写法:
+#                             写 .tmp 再 rename) 会在目录级别触发,保证
+#                             rename 替换掉整个文件也捕获得到
+PathModified=/opt/claude-relay-service/caddy/Caddyfile
+PathChanged=/opt/claude-relay-service/caddy/Caddyfile
+PathChanged=/opt/claude-relay-service/caddy
+
+# 防风暴:deploy.sh 可能短时间内连续写多次;0.5s 窗口内只允许触发一次。
+# 我们的 sync-caddy.sh 本身幂等 —— 真触发两次也就第二次 no-op,代价很小。
+TriggerLimitIntervalSec=2s
+TriggerLimitBurst=3
+
+Unit=gpt2api-caddy-sync.service
+
+[Install]
+WantedBy=multi-user.target

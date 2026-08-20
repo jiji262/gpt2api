@@ -1,0 +1,21 @@
+// ==============================================================
+// 字体自托管 - 不依赖 Google Fonts CDN
+// --------------------------------------------------------------
+// Space Grotesk: Landing hero / 标题 / 按钮
+// Noto Sans SC Variable: 中文正文 + 标题，可变字重 100-900
+// JetBrains Mono: 代码块 / API Key / 等宽数字
+// ==============================================================
+
+// Space Grotesk — 只装常用字重
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/space-grotesk/700.css';
+// 800.css not in installed version of @fontsource/space-grotesk — omitted
+
+// Noto Sans SC Variable - 单文件覆盖全字重
+@import '@fontsource-variable/noto-sans-sc';
+
+// JetBrains Mono — 常规 + 中等
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/600.css';

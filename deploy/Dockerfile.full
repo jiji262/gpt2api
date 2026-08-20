@@ -1,0 +1,87 @@
+# syntax=docker/dockerfile:1.6
+#
+# 多阶段自构建镜像 —— 适用于 CI / oracle 等网络通畅环境
+# ------------------------------------------------------
+# 与 deploy/Dockerfile(预构建变体)并存。
+# 要求:
+#   - 构建上下文 = 仓库根目录
+#   - 可访问公网 (alpine 镜像源 + go proxy + npm)
+# 构建方式:
+#   docker build -f deploy/Dockerfile.full -t gpt2api/server:full ..
+# ------------------------------------------------------
+
+# ---------- Stage 1: Go builder ----------
+FROM golang:1.26-alpine AS gobuilder
+
+RUN apk add --no-cache git ca-certificates
+
+WORKDIR /src
+
+# 先拷 go.mod / go.sum,利用层缓存
+COPY go.mod go.sum ./
+RUN go mod download
+
+# 再拷源码,触发编译
+COPY cmd     ./cmd
+COPY internal ./internal
+COPY pkg     ./pkg
+COPY configs ./configs
+COPY sql     ./sql
+
+ARG TARGETOS=linux
+ARG TARGETARCH
+
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go build -ldflags "-s -w" -o /out/gpt2api ./cmd/server
+
+# goose 迁移工具
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
+    go install github.com/pressly/goose/v3/cmd/goose@v3.20.0 && \
+    cp "$(go env GOPATH)/bin/${TARGETOS}_${TARGETARCH}/goose" /out/goose 2>/dev/null || \
+    cp "$(go env GOPATH)/bin/goose" /out/goose
+
+
+# ---------- Stage 2: Web builder ----------
+FROM node:20-alpine AS webbuilder
+
+WORKDIR /src/web
+
+# 先 package*.json 装依赖,利用层缓存
+COPY web/package.json web/package-lock.json* ./
+RUN npm install --no-audit --no-fund --loglevel=error
+
+# 再拷源码构建
+COPY web/ ./
+RUN npm run build
+
+
+# ---------- Stage 3: Runtime ----------
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates tzdata curl bash mariadb-client \
+    && update-ca-certificates \
+    && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
+
+WORKDIR /app
+
+COPY --from=gobuilder /out/gpt2api /app/gpt2api
+COPY --from=gobuilder /out/goose   /usr/local/bin/goose
+RUN chmod +x /app/gpt2api /usr/local/bin/goose
+
+COPY --from=webbuilder /src/web/dist /app/web/dist
+
+COPY sql     /app/sql
+COPY configs /app/configs
+COPY deploy/entrypoint.sh /app/entrypoint.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh \
+    && mkdir -p /app/data/backups /app/logs
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -fsS http://localhost:8080/healthz || exit 1
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["/app/gpt2api", "-c", "/app/configs/config.yaml"]

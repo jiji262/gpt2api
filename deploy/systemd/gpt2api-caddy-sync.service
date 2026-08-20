@@ -1,0 +1,12 @@
+[Unit]
+Description=gpt2api Caddyfile self-healing sync
+Documentation=https://github.com/jiji262/gpt2api/blob/main/deploy/scripts/sync-caddy.sh
+After=docker.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+WorkingDirectory=/home/ubuntu/gpt2api
+ExecStart=/bin/bash deploy/scripts/sync-caddy.sh
+# best-effort:Caddy 容器没起来 / reload 失败 不要让 service failed 污染监控
+SuccessExitStatus=0 1

@@ -1,0 +1,169 @@
+// ==============================================================
+// Neon Solid Design Tokens
+// --------------------------------------------------------------
+// 该文件被其他 SCSS 通过 `@use './tokens' as *;` 消费（给 SCSS 变量），
+// 同时以 :root CSS 自定义属性形式暴露给运行时和 Element Plus。
+// ==============================================================
+
+// ===== 品牌色（6 纯色）=====
+$c-pink:    #FF3D94;  // 主 accent / 主按钮
+$c-cyan:    #00D9FF;  // 次 accent / info
+$c-yellow:  #FFD600;  // warning / 强调
+$c-purple:  #A855F7;  // operation / focus
+$c-orange:  #FF6B35;  // danger / admin tag
+$c-green:   #00E676;  // success / active
+
+// 主按钮 hover（darken 一档）
+$c-pink-hover:   #E82A80;
+$c-cyan-hover:   #00B8D9;
+$c-yellow-hover: #E6C100;
+$c-purple-hover: #9333EA;
+$c-orange-hover: #E85A28;
+$c-green-hover:  #00C766;
+
+// 亮底上作为文字时用这些压深版本（原亮色对比度不够 WCAG AA）
+$c-cyan-text:   #0097B2;  // 原 #00D9FF 白底 1.64:1 → #0097B2 ≈ 3.8:1
+$c-yellow-text: #A68A00;  // 原 #FFD600 白底 1.25:1 → #A68A00 ≈ 4.2:1
+$c-green-text:  #008E47;  // 原 #00E676 白底 1.92:1 → #008E47 ≈ 4.5:1
+$c-orange-text: #C2410C;  // 原 #FF6B35 白底 2.84:1 → #C2410C ≈ 4.6:1
+$c-pink-text:   #D81E6F;  // 原 #FF3D94 白底 4.07:1 → #D81E6F ≈ 4.9:1
+$c-purple-text: #8833E0;  // 原 #A855F7 白底 3.96:1 → #8833E0 ≈ 4.6:1
+
+// ===== 中性色 =====
+$n-space:   #0A0718;  // Landing 主背景（最深）
+$n-ink-p:   #130A24;  // Sidebar / 暗色面板
+$n-ink:     #1A1A2E;  // 亮色区正文
+$n-cloud:   #FAFAFB;  // 亮色主区背景
+$n-paper:   #FFFFFF;  // 亮色卡片底
+
+// 灰阶
+$gray-50:   #FAFAFB;
+$gray-100:  #F4F4F5;
+$gray-200:  #E5E5EA;
+$gray-300:  #D4D4D8;
+$gray-400:  #A1A1AA;
+$gray-500:  #71717A;
+$gray-600:  #52525B;
+$gray-700:  #3F3F46;
+$gray-800:  #27272A;
+$gray-900:  #18181B;
+
+// 暗色文字色阶
+$dark-text-1: #FFFFFF;
+$dark-text-2: #D8D1EC;
+$dark-text-3: #B0A7C9;
+$dark-text-4: #7E7593;
+
+// 暗色描边
+$dark-border:        rgba(255, 255, 255, 0.08);
+$dark-border-strong: rgba(255, 255, 255, 0.15);
+
+// ===== 字体 =====
+$f-sans: "Space Grotesk", "Noto Sans SC Variable", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+$f-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+// ===== 形状 =====
+$r-sm:   6px;
+$r-md:  10px;
+$r-lg:  14px;
+$r-xl:  20px;
+$r-pill: 999px;
+
+$bw: 1.5px;
+
+// ===== 阴影 =====
+$sh-1: 0 1px 2px rgba(15, 15, 30, 0.04);
+$sh-2: 0 4px 16px rgba(15, 15, 30, 0.08);
+
+// ==============================================================
+// CSS 变量导出
+// ==============================================================
+:root {
+  // 颜色
+  --c-pink:   #{$c-pink};
+  --c-cyan:   #{$c-cyan};
+  --c-yellow: #{$c-yellow};
+  --c-purple: #{$c-purple};
+  --c-orange: #{$c-orange};
+  --c-green:  #{$c-green};
+
+  --c-pink-hover:   #{$c-pink-hover};
+  --c-cyan-hover:   #{$c-cyan-hover};
+  --c-yellow-hover: #{$c-yellow-hover};
+  --c-purple-hover: #{$c-purple-hover};
+  --c-orange-hover: #{$c-orange-hover};
+  --c-green-hover:  #{$c-green-hover};
+
+  --c-cyan-text:   #{$c-cyan-text};
+  --c-yellow-text: #{$c-yellow-text};
+  --c-green-text:  #{$c-green-text};
+  --c-orange-text: #{$c-orange-text};
+  --c-pink-text:   #{$c-pink-text};
+  --c-purple-text: #{$c-purple-text};
+
+  --n-space:   #{$n-space};
+  --n-ink-p:   #{$n-ink-p};
+  --n-ink:     #{$n-ink};
+  --n-cloud:   #{$n-cloud};
+  --n-paper:   #{$n-paper};
+
+  --gray-100: #{$gray-100};
+  --gray-200: #{$gray-200};
+  --gray-300: #{$gray-300};
+  --gray-400: #{$gray-400};
+  --gray-500: #{$gray-500};
+  --gray-600: #{$gray-600};
+  --gray-700: #{$gray-700};
+
+  // 暗色文字 / 描边（用于 dark-area 内组件消费）
+  --dark-text-1: #{$dark-text-1};
+  --dark-text-2: #{$dark-text-2};
+  --dark-text-3: #{$dark-text-3};
+  --dark-text-4: #{$dark-text-4};
+  --dark-border: #{$dark-border};
+  --dark-border-strong: #{$dark-border-strong};
+
+  // 字体
+  --f-sans: #{$f-sans};
+  --f-mono: #{$f-mono};
+
+  --fs-hero: 80px;
+  --fs-h1:   48px;
+  --fs-h2:   32px;
+  --fs-h3:   24px;
+  --fs-h4:   18px;
+  --fs-lead: 19px;
+  --fs-body: 16px;
+  --fs-ui:   14px;
+  --fs-sm:   13px;
+  --fs-xs:   12px;
+
+  // 形状
+  --r-sm:   #{$r-sm};
+  --r-md:   #{$r-md};
+  --r-lg:   #{$r-lg};
+  --r-xl:   #{$r-xl};
+  --r-pill: #{$r-pill};
+  --bw:     #{$bw};
+
+  --sh-1: #{$sh-1};
+  --sh-2: #{$sh-2};
+
+  // 语义别名
+  --app-bg:       var(--n-cloud);
+  --panel-bg:     var(--n-paper);
+  --sidebar-bg:   var(--n-ink-p);
+  --text-primary: var(--n-ink);
+  --text-muted:   #{$gray-500};
+  --border:       #{$gray-200};
+  --accent:       var(--c-pink);
+}
+
+// 暗色区：Landing / Login / Register / Errors / Sidebar 的祖先或自身挂 dark-area
+.dark-area {
+  --app-bg:       var(--n-space);
+  --panel-bg:     var(--n-ink-p);
+  --text-primary: #{$dark-text-1};
+  --text-muted:   #{$dark-text-3};
+  --border:       #{$dark-border};
+}

@@ -1,0 +1,37 @@
+.git
+.github
+.idea
+.vscode
+.claude
+.DS_Store
+
+# 本地产物,镜像里自己 build
+deploy/bin/
+web/node_modules/
+web/dist/
+web/.cache/
+web/.vite/
+
+# 本地 / 敏感配置
+configs/config.yaml
+configs/*.local.yaml
+deploy/.env
+.env
+.env.local
+
+# 日志 / 数据
+logs/
+deploy/logs/
+*.log
+data/
+uploads/
+storage/
+
+# 备份
+*.tgz
+*.tar.gz
+_tmp/
+tmp/
+
+# 文档截图(不需要进镜像)
+docs/screenshots/

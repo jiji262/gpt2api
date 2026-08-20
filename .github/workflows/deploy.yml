@@ -1,0 +1,38 @@
+name: Deploy to oracle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-oracle
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USER }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script_stop: true
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            cd ~/gpt2api
+            git fetch origin main
+            git reset --hard origin/main
+            # 接入层自愈(push 触发版):确保 Caddyfile 里 gpt2api-managed block
+            # 与仓库 snippet 一致,然后 caddy reload。best-effort。
+            bash deploy/scripts/sync-caddy.sh || echo "[deploy] sync-caddy 返回非零,继续业务部署"
+            # 安装/更新 systemd timer(后台每 60 秒自愈一次,抵御
+            # claude-relay-service 的 deploy.sh 随时覆盖 Caddyfile)。
+            chmod +x deploy/scripts/*.sh 2>/dev/null || true
+            bash deploy/scripts/install-systemd.sh || echo "[deploy] install-systemd 返回非零,继续"
+            cd deploy
+            docker compose up -d --build
+            docker compose ps
